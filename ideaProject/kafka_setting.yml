@@ -1,0 +1,23 @@
+
+
+# Kafka client-specific configuration
+replicationFactor: 1
+messageSize: 1024
+
+
+topicConfig: |
+  min.insync.replicas=1
+
+brokerConfig: |
+  bootstrap.servers=localhost:9092
+
+producerConfig: |
+  acks=all
+  linger.ms=100
+  batch.size=1048576
+  max.request.size=4194304
+
+consumerConfig: |
+  auto.offset.reset=earliest
+  enable.auto.commit=false
+  max.partition.fetch.bytes=10485760
