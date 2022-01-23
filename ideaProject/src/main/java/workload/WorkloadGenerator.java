@@ -1,7 +1,7 @@
 package workload;
 
-import kafka.KafkaBenchProducer;
 import kafka.KafkaService;
+import metrics.ProducerStats;
 import metrics.MetricsHandler;
 import metrics.ProducerMetrics;
 import org.apache.logging.log4j.LogManager;
@@ -28,9 +28,9 @@ public class WorkloadGenerator {
     private final int warmupDuration;
 
     private List<ScheduledFuture<?>> futures = new ArrayList<>();
-    private List<ProducerMetrics> producersMetrics = new ArrayList<>();
-    private int producerRate;
-    private int totalExpectedRecordsNumber = 0;
+    private final List<ProducerMetrics> producersMetrics = new ArrayList<>();
+    private final List<ProducerStats> producersStats = new ArrayList<>();
+    private final int producerRate;
 
     public WorkloadGenerator(WorkloadConfig workloadConfig, KafkaService kafkaService) {
         this.workloadConfig = workloadConfig;
@@ -42,15 +42,9 @@ public class WorkloadGenerator {
         this.warmupDuration = workloadConfig.getWarmupDuration();
     }
 
-    public void runBenchmark() {
+    public void generateLoad() {
 
-        Set<String> topics = kafkaService.createTopics(workloadConfig.getNumberOfTopics(),
-                workloadConfig.getPartitionsPerTopic());
-        LOGGER.info("Created {} topics", topics.size());
-        String payload = stringGenerator.createPayloadRandomly(workloadConfig.getMessageSize());
-        LOGGER.info("Created payload of the size {}", payload.length());
-        kafkaService.createProducers(topics);
-        LOGGER.info("Created {} producers", kafkaService.getProducers().size());
+        initializeKafka();
         // TODO: create consumers and check their readiness
         //consumerManager.createConsumers(topics);
         //consumerManager.ensureConsumersReadiness();
@@ -58,42 +52,64 @@ public class WorkloadGenerator {
             // TODO: find max. producer rate
         }
 
-        LOGGER.info("Getting warm-up for {} minutes", warmupDuration);
         generateWorkload();
-        // TODO: Reset metrics?
-        LOGGER.info("Starting the benchmark. It'll run for {} minutes", benchmarkDuration);
-        // TODO: how to stop it after the given time?
-        // collectStatsFor15m() -> after a specific amount of time elapses this will collect metrics, return and shutdown
+        enterWarmupPhase();
+        enterBenchPhase();
         stopLoad();
+        shutdown();
 
+        kafkaService.getProducers().forEach(
+                producer -> producersMetrics.add(new ProducerMetrics(producer)));
+        kafkaService.getProducers().forEach(
+                producer -> producersStats.add(producer.getLocalStats()));
+        long totalExpectedRecordsNumber = kafkaService.getProducers().stream()
+                .map(p -> p.getLocalStats().messageCounter).mapToLong(i -> i).sum();
+
+        MetricsHandler metricsHandler =
+                new MetricsHandler(producersMetrics, producersStats, totalExpectedRecordsNumber);
+        metricsHandler.writeMetrics();
+
+    }
+
+    private void initializeKafka() {
+        Set<String> topics = kafkaService.createTopics(workloadConfig.getNumberOfTopics(),
+                workloadConfig.getPartitionsPerTopic());
+        LOGGER.info("Created {} topics", topics.size());
+        String payload = stringGenerator.createPayloadRandomly(workloadConfig.getMessageSize());
+        LOGGER.info("Created payload of the size {}", payload.length());
+        kafkaService.createProducers(topics);
+        LOGGER.info("Created {} producers", kafkaService.getProducers().size());
+    }
+
+    private void enterBenchPhase() {
+        LOGGER.info("Starting the benchmark. It'll run for {} minutes", benchmarkDuration);
         try {
-            //BENCH_DURATION_UNIT.sleep(
-             //       benchmarkDuration + EXTRA_SHUTDOWN_TIME);
-            TimeUnit.SECONDS.sleep(
-                    15 + 5);
+            TimeUnit.SECONDS.sleep(20);
 
         } catch (InterruptedException e) {
-            LOGGER.info("Something went wrong while waiting for threads to shutdown...");
+            LOGGER.error(e);
         }
+    }
 
-        LOGGER.info("Finished producing workload. Shutting down...");
+    private void enterWarmupPhase() {
+        LOGGER.info("Getting warm-up for {} minutes", warmupDuration);
+        try {
+            //BENCH_DURATION_UNIT.sleep(
+            //       benchmarkDuration + EXTRA_SHUTDOWN_TIME);
+            TimeUnit.SECONDS.sleep(5);
+
+        } catch (InterruptedException e) {
+            LOGGER.error(e);
+        }
         kafkaService.getProducers().forEach(
-                producer -> producersMetrics.add(
-                        new ProducerMetrics(producer)
-                )
+                p -> p.setWarmup(false)
         );
-        totalExpectedRecordsNumber = kafkaService.getProducers().stream()
-                        .map(KafkaBenchProducer::getProducedMessages).mapToInt(i->i).sum();
-
-        MetricsHandler metricsHandler = new MetricsHandler(producersMetrics, totalExpectedRecordsNumber);
-        metricsHandler.writeMetrics();
-        shutdown();
     }
 
     private void stopLoad() {
-        executorService.schedule(
-                () -> futures.forEach(f -> f.cancel(true)),
-                15, TimeUnit.SECONDS);
+        LOGGER.info("Finished producing workload. Shutting down...");
+        executorService.submit(() -> futures.forEach(f -> f.cancel(true)));
+
     }
     //benchmarkDuration, BENCH_DURATION_UNIT
 

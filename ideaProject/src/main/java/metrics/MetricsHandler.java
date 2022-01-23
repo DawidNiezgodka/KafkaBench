@@ -5,10 +5,13 @@ import java.util.List;
 public class MetricsHandler {
 
     private List<ProducerMetrics> producerMetricsList;
-    private int totalExpectedRecordCount;
+    private List<ProducerStats> producerStatsList;
+    private long totalExpectedRecordCount;
 
-    public MetricsHandler(List<ProducerMetrics> producerMetricsList, int totalExpectedRecordCount) {
+    public MetricsHandler(List<ProducerMetrics> producerMetricsList,
+                          List<ProducerStats> producerStatsList, long totalExpectedRecordCount) {
         this.producerMetricsList = producerMetricsList;
+        this.producerStatsList = producerStatsList;
         this.totalExpectedRecordCount = totalExpectedRecordCount;
     }
 

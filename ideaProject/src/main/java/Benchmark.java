@@ -58,7 +58,7 @@ public class Benchmark {
                     workloadConfig,
                     kafkaService
             );
-            workloadGenerator.runBenchmark();
+            workloadGenerator.generateLoad();
         } catch (IOException e) {
             e.printStackTrace();
         }
