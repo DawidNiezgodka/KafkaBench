@@ -1,9 +1,7 @@
 
-
-# Kafka client-specific configuration
+name: acks=all,linger=100,batch=1mb
 replicationFactor: 1
 messageSize: 1024
-
 
 topicConfig: |
   min.insync.replicas=1
@@ -12,8 +10,8 @@ brokerConfig: |
   bootstrap.servers=localhost:9092
 
 producerConfig: |
-  acks=all
-  linger.ms=100
+  acks=0
+  linger.ms=0
   batch.size=1048576
   max.request.size=4194304
 

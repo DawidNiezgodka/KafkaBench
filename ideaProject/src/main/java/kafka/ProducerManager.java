@@ -4,7 +4,10 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import util.StringGenerator;
+import workload.WorkloadGenerator;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,12 +20,13 @@ import java.util.Properties;
  */
 public class ProducerManager {
 
-    private final ConfigWrapper config;
+    private static final Logger LOGGER = LogManager.getLogger(ProducerManager.class);
+    private final KafkaConfigWrapper config;
     private final StringGenerator stringGenerator;
     private final Properties brokerProps = new Properties();
     private final Properties producerProps = new Properties();
 
-    public ProducerManager(ConfigWrapper config, StringGenerator stringGenerator) {
+    public ProducerManager(KafkaConfigWrapper config, StringGenerator stringGenerator) {
         this.config = config;
         this.stringGenerator = stringGenerator;
         initProducerProps();

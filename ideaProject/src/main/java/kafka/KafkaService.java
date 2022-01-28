@@ -9,14 +9,16 @@ import util.StringGenerator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.io.StringReader;
+import java.util.*;
 
 public class KafkaService {
 
     private static final Logger LOGGER = LogManager.getLogger(KafkaService.class);
     private static final ObjectMapper MAPPER = new ObjectMapper(new YAMLFactory());
+
+    private KafkaConfigWrapper kafkaConfigWrapper;
+    private String kafkaConfigName;
 
     private StringGenerator stringGenerator;
 
@@ -28,19 +30,20 @@ public class KafkaService {
     List<KafkaBenchConsumer> consumers = new ArrayList<>();
 
     public KafkaService(File configurationFile) {
+
         init(configurationFile);
     }
 
     private void init(File configurationFile) {
 
-        ConfigWrapper configWrapper;
         try {
-            configWrapper = MAPPER.readValue(configurationFile, ConfigWrapper.class);
-            LOGGER.info("Read kafka config file: {}", configWrapper.toString());
-            this.stringGenerator = new StringGenerator(configWrapper.getMessageSize());
-            topicManager = new TopicManager(configWrapper);
-            producerManager = new ProducerManager(configWrapper, stringGenerator);
-            consumerManager = new ConsumerManager(configWrapper);
+            kafkaConfigWrapper = MAPPER.readValue(configurationFile, KafkaConfigWrapper.class);
+            LOGGER.info("Read kafka config file: {}", kafkaConfigWrapper.toString());
+            this.kafkaConfigName = kafkaConfigWrapper.getName();
+            this.stringGenerator = new StringGenerator(kafkaConfigWrapper.getMessageSize());
+            topicManager = new TopicManager(kafkaConfigWrapper);
+            producerManager = new ProducerManager(kafkaConfigWrapper, stringGenerator);
+            consumerManager = new ConsumerManager(kafkaConfigWrapper);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,10 +81,24 @@ public class KafkaService {
         }
     }
 
+    public Map<String, String> getProducerProperties() {
+        HashMap<String, String> propsMap = new HashMap<>();
+        Properties properties = new Properties();
+        try {
+            properties.load(new StringReader(kafkaConfigWrapper.getProducerConfig()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            propsMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+        }
+        return propsMap;
+    }
+
+    public String getKafkaConfigName() {return kafkaConfigName;}
     public List<KafkaBenchProducer> getProducers() {
         return producers;
     }
-
     public List<KafkaBenchConsumer> getConsumers() {
         return consumers;
     }

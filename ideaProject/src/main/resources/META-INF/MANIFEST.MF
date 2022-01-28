@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Main-Class: Benchmark
+Class-Path: jopt-simple-5.0.4.jar kafka-metadata-2.8.1.jar slf4j-api-1.7
+ .30.jar scala-library-2.13.5.jar jackson-annotations-2.10.5.jar netty-r
+ esolver-4.1.50.Final.jar kafka_2.13-2.8.1.jar commons-cli-1.4.jar jacks
+ on-module-scala_2.13-2.10.5.jar jcommander-1.82.jar netty-transport-4.1
+ .50.Final.jar jackson-databind-2.10.5.1.jar log4j-core-2.17.0.jar kafka
+ -raft-2.8.1.jar kafka-clients-2.8.1.jar metrics-core-2.2.0.jar snappy-j
+ ava-1.1.8.1.jar scala-reflect-2.13.5.jar netty-codec-4.1.50.Final.jar j
+ ackson-dataformat-csv-2.10.5.jar jackson-core-2.13.1.jar netty-transpor
+ t-native-epoll-4.1.50.Final.jar netty-buffer-4.1.50.Final.jar zookeeper
+ -jute-3.5.9.jar snakeyaml-1.28.jar jackson-dataformat-yaml-2.13.1.jar n
+ etty-handler-4.1.50.Final.jar zstd-jni-1.4.9-1.jar jackson-module-paran
+ amer-2.10.5.jar zookeeper-3.5.9.jar audience-annotations-0.5.0.jar scal
+ a-collection-compat_2.13-2.3.0.jar scala-java8-compat_2.13-0.9.1.jar lo
+ g4j-api-2.17.0.jar scala-logging_2.13-3.9.2.jar netty-common-4.1.50.Fin
+ al.jar netty-transport-native-unix-common-4.1.50.Final.jar argparse4j-0
+ .7.0.jar lz4-java-1.7.1.jar jackson-datatype-jdk8-2.10.5.jar paranamer-
+ 2.8.jar
+

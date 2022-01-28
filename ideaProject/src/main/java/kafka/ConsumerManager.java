@@ -17,9 +17,9 @@ public class ConsumerManager {
 
     private final Properties brokerProps = new Properties();
     private Properties consumerProps = new Properties();
-    private final ConfigWrapper config;
+    private final KafkaConfigWrapper config;
 
-    public ConsumerManager(ConfigWrapper config) {
+    public ConsumerManager(KafkaConfigWrapper config) {
         this.config = config;
         initConsumerProps();
     }

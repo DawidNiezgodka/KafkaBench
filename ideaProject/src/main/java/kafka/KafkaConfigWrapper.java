@@ -1,13 +1,18 @@
 package kafka;
 
-public class ConfigWrapper {
+public class KafkaConfigWrapper {
 
+    private String name;
     private int replicationFactor;
     private int messageSize;
     private String brokerConfig;
     private String topicConfig;
     private String producerConfig;
     private String consumerConfig;
+
+    public String getName() {
+        return name;
+    }
 
     public int getReplicationFactor() {
         return replicationFactor;

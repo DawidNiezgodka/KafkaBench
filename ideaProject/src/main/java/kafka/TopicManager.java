@@ -1,7 +1,6 @@
 package kafka;
 
 import org.apache.kafka.clients.admin.*;
-import org.apache.kafka.common.internals.Topic;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,14 +13,14 @@ public class TopicManager {
 
     private static final Logger LOGGER = LogManager.getLogger(TopicManager.class);
 
-    private final ConfigWrapper config;
+    private final KafkaConfigWrapper config;
     private AdminClient adminClient;
     private final Properties brokerProps = new Properties();
     private final Properties topicProps = new Properties();
 
 
-    public TopicManager(ConfigWrapper configWrapper) {
-        this.config = configWrapper;
+    public TopicManager(KafkaConfigWrapper kafkaConfigWrapper) {
+        this.config = kafkaConfigWrapper;
         initTopicPropsAndAdminClient();
     }
 

@@ -2,14 +2,16 @@ package workload;
 
 import kafka.KafkaService;
 import metrics.ProducerStats;
-import metrics.MetricsHandler;
+import metrics.MetricsManager;
 import metrics.ProducerMetrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.StringGenerator;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -51,13 +53,17 @@ public class WorkloadGenerator {
         if (producerRate == 0) {
             // TODO: find max. producer rate
         }
-
         generateWorkload();
         enterWarmupPhase();
         enterBenchPhase();
         stopLoad();
         shutdown();
+        prepareResults();
+    }
 
+    private void prepareResults() {
+        // TODO: this is rather ugly...
+        // Find a way to make a better separation of concerns here...
         kafkaService.getProducers().forEach(
                 producer -> producersMetrics.add(new ProducerMetrics(producer)));
         kafkaService.getProducers().forEach(
@@ -65,10 +71,12 @@ public class WorkloadGenerator {
         long totalExpectedRecordsNumber = kafkaService.getProducers().stream()
                 .map(p -> p.getLocalStats().messageCounter).mapToLong(i -> i).sum();
 
-        MetricsHandler metricsHandler =
-                new MetricsHandler(producersMetrics, producersStats, totalExpectedRecordsNumber);
-        metricsHandler.writeMetrics();
-
+        Map<String, String> producerPros = kafkaService.getProducerProperties();
+        String benchmarkName = kafkaService.getKafkaConfigName() + "," +
+                workloadConfig.getName();
+        MetricsManager metricsManager =
+                new MetricsManager(producersMetrics, producersStats);
+        metricsManager.writeMetrics(false, workloadConfig, producerPros, benchmarkName);
     }
 
     private void initializeKafka() {
@@ -84,8 +92,7 @@ public class WorkloadGenerator {
     private void enterBenchPhase() {
         LOGGER.info("Starting the benchmark. It'll run for {} minutes", benchmarkDuration);
         try {
-            TimeUnit.SECONDS.sleep(20);
-
+            TimeUnit.SECONDS.sleep(30);
         } catch (InterruptedException e) {
             LOGGER.error(e);
         }
@@ -122,6 +129,7 @@ public class WorkloadGenerator {
      */
     private void generateWorkload() {
         long period = calculatePeriodForGivenProducerRate(producerRate);
+        System.out.println("Period: " + period);
         futures = kafkaService.getProducers()
                 .stream()
                 .map(producer -> executorService.scheduleAtFixedRate(

@@ -1,9 +1,9 @@
-name: 1 producer,1 consumer,1 partition
-numberOfTopics: 4
+name: part=1,rate=10000
+numberOfTopics: 1
 partitionsPerTopic: 1
 messageSize: 1024
 consumersPerTopic: 1
 consumerBacklog: 0
 producersPerTopic: 1
-producerRatePerSec: 1000
+producerRatePerSec: 30000
 benchmarkDurationMinutes: 1
