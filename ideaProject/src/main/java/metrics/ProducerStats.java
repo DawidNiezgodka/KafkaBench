@@ -5,16 +5,23 @@ import java.util.List;
 
 public class ProducerStats {
 
-    // Stats for actual bench
-    public long failedCount = 0;
-    public long messageCounter = 0;
-    public long byteCounter = 0;
+    public long periodicalFailedCount = 0;
+    public long periodicalMessageCount = 0;
+    public long periodicalByteCount = 0;
 
-    // Stats for actual bench + warm-up
     public long totalFailedCount = 0;
-    public long totalMessageCounter = 0;
-    public long totalByteCounter = 0;
+    public long totalMessageCount = 0;
+    public long totalByteCount = 0;
 
     public List<Long> latencies = new ArrayList<>();
+    public List<Double> producerRates = new ArrayList<>();
+    public List<Double> producerThroughputs = new ArrayList<>();
+
+
+    public void resetPeriodicalStats() {
+        periodicalFailedCount = 0;
+        periodicalByteCount = 0;
+        periodicalMessageCount = 0;
+    }
 
 }

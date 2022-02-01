@@ -21,7 +21,7 @@ public class BenchConsts {
         //RELEVANT_PRODUCER_METRICS.add("record-size-max");
         RELEVANT_PRODUCER_METRICS.add("batch-size-avg");
         //RELEVANT_PRODUCER_METRICS.add("record-retry-total");
-        //RELEVANT_PRODUCER_METRICS.add("batch-size-max");
+        RELEVANT_PRODUCER_METRICS.add("batch-size-max");
         //RELEVANT_PRODUCER_METRICS.add("record-error-total");
         //RELEVANT_PRODUCER_METRICS.add("record-error-rate");
         //RELEVANT_PRODUCER_METRICS.add("record-retry-rate");
@@ -31,7 +31,16 @@ public class BenchConsts {
     }
 
     public static final String PRODUCER_METRICS = "producer-metrics";
-    public static final String STRING_1024 = "hksgdcxvelqglcrqdtqceyllecwydrrbxvylcxckitghkmpqqapgghujlsvwykhyofqekgdlnauhishsufcjamdbqbyehhhlctyetkrcvmdxatkovxtajauowvwgfhvobltsvkgunkifeowtlrccrpgyrxwunvefyduenjdvivcfofqifogbdexbcmrlgugfwqjfsorjdflpysvvkmlmupajqatrjiylgujsushngybpbpyfjrcvcijltseygyxohrcsuemlipbvjpsbearwwyhwapclfmmnihdvieeusbkmcddpwaorqahienfgjlvsiivxfqeasndyhpeaagrsxvfxxoqsyrsfgobkagiexxwalpfblqranjikebkmorasugnubwwvvdjfitchhynfoilomkomawpupcvvnvqaskkonbhymstdwcpltwnnxlgyfgyuaanalhpxwiqdgrvmvmcevreqxsfqapbnxmuvdlvoqmvjxueqbjlncwignkmbsdrhiwqieuyimhcgprysypcveexgtqyietglighqpcuyhmuagunvykgimipyfudprlpsajivjdiajwlxsjerfxcolpmvdjqxogufooxacnbslquhtaoqbaqghlmbhcaapqoplnpdmnpgevyblmkjtcpbfqccerhleecmwiyncdtnrsxwyellhxrwgssueqhekjmejjqoilrasthrfiagaupvagsgllessjxfmewhnwsefkfbanqxqiwlafbuydonqvfruqlepbiyssiljvwixkhcvsgbkjmrfnntvimyedhvnnsxkoscqoehnexjgmmloxlelolkwlkdpehdquvhdmucduyxyhxtfqimpdrokwoufpvjyohymfppnqdcnrmvjyohcsulciqpiexrspsqrenbstifdwudahncbkvjwcmassqgmksdllaowfulxfgqxcdewufvixvepjbnxknvknpqgyrscmjnijpiakmonlgdjbywkkbmiahujharofii";
+    public static final String STRING_1024 = "hksgdcxvelqglcrqdtqceyllecwydrrbxvylcxckitghkmpqqapgghujlsvwykhyofqekgdlna" +
+            "uhishsufcjamdbqbyehhhlctyetkrcvmdxatkovxtajauowvwgfhvobltsvkgunkifeowtlrccrpgyrxwunvefyduenjdvivcfofqifogbd" +
+            "exbcmrlgugfwqjfsorjdflpysvvkmlmupajqatrjiylgujsushngybpbpyfjrcvcijltseygyxohrcsuemlipbvjpsbearwwyhwapclfmmni" +
+            "hdvieeusbkmcddpwaorqahienfgjlvsiivxfqeasndyhpeaagrsxvfxxoqsyrsfgobkagiexxwalpfblqranjikebkmorasugnubwwvvdjfi" +
+            "tchhynfoilomkomawpupcvvnvqaskkonbhymstdwcpltwnnxlgyfgyuaanalhpxwiqdgrvmvmcevreqxsfqapbnxmuvdlvoqmvjxueqbjlncw" +
+            "ignkmbsdrhiwqieuyimhcgprysypcveexgtqyietglighqpcuyhmuagunvykgimipyfudprlpsajivjdiajwlxsjerfxcolpmvdjqxogufo" +
+            "oxacnbslquhtaoqbaqghlmbhcaapqoplnpdmnpgevyblmkjtcpbfqccerhleecmwiyncdtnrsxwyellhxrwgssueqhekjmejjqoilrasthr" +
+            "fiagaupvagsgllessjxfmewhnwsefkfbanqxqiwlafbuydonqvfruqlepbiyssiljvwixkhcvsgbkjmrfnntvimyedhvnnsxkoscqoehnexjg" +
+            "mmloxlelolkwlkdpehdquvhdmucduyxyhxtfqimpdrokwoufpvjyohymfppnqdcnrmvjyohcsulciqpiexrspsqrenbstifdwudahncbkvjwc" +
+            "massqgmksdllaowfulxfgqxcdewufvixvepjbnxknvknpqgyrscmjnijpiakmonlgdjbywkkbmiahujharofii";
     public static final short SEED = 42;
     public static final short DEFAULT_TOPIC_LEN = 25;
     public static final short DEFAULT_INITIAL_DELAY_OF_PRODUCERS = 0;
@@ -42,5 +51,6 @@ public class BenchConsts {
 
     public static final String RESULTS_FOLDER_RELATIVE = "./testFolder";
     public static final String RESULTS_FILE = "/results.csv";
+    public static final String PERIODIC_RATE_FILE = "/periodicRate.csv";
 
 }

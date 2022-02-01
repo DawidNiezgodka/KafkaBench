@@ -5,6 +5,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import util.KeyGen;
 import util.StringGenerator;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -42,16 +43,19 @@ public class KafkaBenchProducer implements Runnable {
 
     private void sendMessage() {
         byte[] payload = stringGenerator.createPayloadRandomlyWithSize().getBytes(StandardCharsets.UTF_8);
-        ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, payload);
+        ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, KeyGen.get(), payload);
         final long sendTime = System.nanoTime();
         producer.send(record, (recordMetadata, e) -> {
             if (e == null) {
-                producerStats.messageCounter++;
-                producerStats.byteCounter+=payload.length;
+                producerStats.periodicalMessageCount++;
+                producerStats.periodicalByteCount += payload.length;
+                producerStats.totalMessageCount++;
+                producerStats.totalByteCount += payload.length;
                 producerStats.latencies.add(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - sendTime));
             } else {
                 LOGGER.info("Failed to send a payload: {}", payload);
-                producerStats.failedCount++;
+                producerStats.periodicalFailedCount++;
+                producerStats.totalFailedCount++;
             }
         });
     }
@@ -77,4 +81,5 @@ public class KafkaBenchProducer implements Runnable {
         LOGGER.info("Terminating warmup mode...");
         this.warmup = warmup;
     }
+
 }

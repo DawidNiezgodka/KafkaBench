@@ -1,7 +1,10 @@
 package bench;
 
+import java.time.LocalDateTime;
+
 public class BenchmarkResult {
 
+    private final LocalDateTime benchTime;
     private final String name;
     /**
      * Producer and topic config
@@ -15,14 +18,8 @@ public class BenchmarkResult {
      * Manually computed metrics
      */
     private final double publishRate;
-
-    private final int consumeRate;
-    private final int backlog;
-
     private final double aveLatency;
     private final double maxLatency;
-    private final double aveEndToEndLatency;
-    private final double maxEndToEndLatency;
 
     /**
      * Metrics from the KafkaProducer's metrics() method
@@ -34,18 +31,15 @@ public class BenchmarkResult {
     private final double recSendRate;
 
     public BenchmarkResult(ResBuilder resBuilder) {
+        this.benchTime = LocalDateTime.now();
         this.name = resBuilder.getName();
         this.publishRate = resBuilder.getPublishRate();
-        this.consumeRate = resBuilder.getConsumeRate();
-        this.backlog = resBuilder.getBacklog();
         this.partitions = resBuilder.getPartitions();
         this.acks = resBuilder.getAcks();
         this.batchSize = resBuilder.getBatchSize();
         this.lingerMs = resBuilder.getLingerMs();
         this.aveLatency = resBuilder.getAveLatency();
         this.maxLatency = resBuilder.getMaxLatency();
-        this.aveEndToEndLatency = resBuilder.getAveEndToEndLatency();
-        this.maxEndToEndLatency = resBuilder.getMaxEndToEndLatency();
         this.reqLatAvg = resBuilder.getReqLatAvg();
         this.reqLatMax = resBuilder.getReqLatMax();
         this.batchSizeAvg = resBuilder.getBatchSizeAvg();
@@ -73,28 +67,12 @@ public class BenchmarkResult {
         return publishRate;
     }
 
-    public int getConsumeRate() {
-        return consumeRate;
-    }
-
-    public int getBacklog() {
-        return backlog;
-    }
-
     public double getAveLatency() {
         return aveLatency;
     }
 
     public double getMaxLatency() {
         return maxLatency;
-    }
-
-    public double getAveEndToEndLatency() {
-        return aveEndToEndLatency;
-    }
-
-    public double getMaxEndToEndLatency() {
-        return maxEndToEndLatency;
     }
 
     public double getReqLatAvg() {

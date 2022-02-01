@@ -16,7 +16,7 @@ public class Benchmark {
 
     public static class Args {
         @Parameter(
-                names = {"--kafka_bench_setting", "-kbs"},
+                names = {"--kafka_bench_setting", "-k"},
                 description = "a file that contains the description of setting of various kafka components",
                 required = true)
         public String kafkaBenchSetting;
@@ -31,10 +31,6 @@ public class Benchmark {
 
     public static void main(String[] args) {
 
-        String classpathStr = System.getProperty("java.class.path");
-        System.out.print("CP:" + classpathStr);
-        System.exit(0);
-
         Args arguments = new Args();
         JCommander jCommander = new JCommander(arguments);
 
@@ -47,7 +43,7 @@ public class Benchmark {
         /*
         First step: initialize kafka benchmark service that provides functionalities
         to create topics, consumers, producers according to the properties specified
-        in the file, which was provided as an argument to the programm.
+        in the file, which was provided as an argument to the program.
          */
         File kafkaBenchSetting = new File(arguments.kafkaBenchSetting);
         KafkaService kafkaService = new KafkaService(kafkaBenchSetting);

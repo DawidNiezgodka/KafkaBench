@@ -7,8 +7,6 @@ public class ResBuilder {
     private String name;
 
     private double publishRate;
-    private int consumeRate;
-    private int backlog;
 
     private int partitions;
     private String acks;
@@ -17,8 +15,6 @@ public class ResBuilder {
 
     private double aveLatency;
     private double maxLatency;
-    private double aveEndToEndLatency;
-    private double maxEndToEndLatency;
 
     private double reqLatAvg;
     private double reqLatMax;
@@ -31,17 +27,9 @@ public class ResBuilder {
         return this;
     }
 
-    public ResBuilder withoutConsumers() {
-        this.consumeRate = 0;
-        this.backlog = 0;
-        this.aveEndToEndLatency = 0d;
-        this.maxEndToEndLatency = 0d;
-        return this;
-    }
-
     public ResBuilder withDefaultSetting() {
         this.partitions = 1;
-        this.acks = "all";
+        this.acks = "0";
         this.lingerMs = 0;
         this.batchSize = 16384;
         return this;
@@ -94,14 +82,6 @@ public class ResBuilder {
         return publishRate;
     }
 
-    public int getConsumeRate() {
-        return consumeRate;
-    }
-
-    public int getBacklog() {
-        return backlog;
-    }
-
     public int getPartitions() {
         return partitions;
     }
@@ -124,14 +104,6 @@ public class ResBuilder {
 
     public double getMaxLatency() {
         return maxLatency;
-    }
-
-    public double getAveEndToEndLatency() {
-        return aveEndToEndLatency;
-    }
-
-    public double getMaxEndToEndLatency() {
-        return maxEndToEndLatency;
     }
 
     public double getReqLatAvg() {

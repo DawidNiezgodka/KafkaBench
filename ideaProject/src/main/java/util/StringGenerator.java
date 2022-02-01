@@ -27,11 +27,6 @@ public class StringGenerator {
         this.defaultMessageSize = defaultMessageSize;
     }
 
-    /**
-     * Generates random payload - it might violate a rule for a deterministic benchmark
-     * @param payloadSize size of the payload
-     * @return
-     */
     public String createPayloadRandomly(int payloadSize) {
         byte[] array = new byte[payloadSize];
         this.random.nextBytes(array);

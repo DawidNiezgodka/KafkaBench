@@ -8,7 +8,6 @@ public class KafkaConfigWrapper {
     private String brokerConfig;
     private String topicConfig;
     private String producerConfig;
-    private String consumerConfig;
 
     public String getName() {
         return name;
@@ -32,9 +31,5 @@ public class KafkaConfigWrapper {
 
     public String getProducerConfig() {
         return producerConfig;
-    }
-
-    public String getConsumerConfig() {
-        return consumerConfig;
     }
 }

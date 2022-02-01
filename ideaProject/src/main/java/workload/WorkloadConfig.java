@@ -1,18 +1,23 @@
 package workload;
 
+/*
+name: part=1,rate=10000
+numberOfTopics: 4
+partitionsPerTopic: 1
+messageSize: 1024
+producerRatePerSec: 30000
+benchmarkDurationMinutes: 1
+warmupDurationMinutes: 1
+ */
 public class WorkloadConfig {
 
     private String name;
     private int numberOfTopics;
     private int partitionsPerTopic;
     private int messageSize;
-    private int consumersPerTopic;
-    private int consumerBacklog;
-    private int producersPerTopic;
     private int producerRatePerSec;
     private int benchmarkDurationMinutes;
-    private int warmupDuration;
-    private int sendingInterval;
+    private int warmupDurationMinutes;
 
     public String getName() {
         return name;
@@ -30,18 +35,6 @@ public class WorkloadConfig {
         return messageSize;
     }
 
-    public int getConsumersPerTopic() {
-        return consumersPerTopic;
-    }
-
-    public int getConsumerBacklog() {
-        return consumerBacklog;
-    }
-
-    public int getProducersPerTopic() {
-        return producersPerTopic;
-    }
-
     public int getProducerRatePerSec() {
         return producerRatePerSec;
     }
@@ -50,11 +43,7 @@ public class WorkloadConfig {
         return benchmarkDurationMinutes;
     }
 
-    public int getWarmupDuration() {
-        return warmupDuration;
-    }
-
-    public int getSendingInterval() {
-        return sendingInterval;
+    public int getWarmupDurationMinutes() {
+        return warmupDurationMinutes;
     }
 }

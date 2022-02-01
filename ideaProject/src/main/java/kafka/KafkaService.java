@@ -24,10 +24,8 @@ public class KafkaService {
 
     private TopicManager topicManager;
     private ProducerManager producerManager;
-    private ConsumerManager consumerManager;
 
     List<KafkaBenchProducer> producers = new ArrayList<>();
-    List<KafkaBenchConsumer> consumers = new ArrayList<>();
 
     public KafkaService(File configurationFile) {
 
@@ -43,16 +41,12 @@ public class KafkaService {
             this.stringGenerator = new StringGenerator(kafkaConfigWrapper.getMessageSize());
             topicManager = new TopicManager(kafkaConfigWrapper);
             producerManager = new ProducerManager(kafkaConfigWrapper, stringGenerator);
-            consumerManager = new ConsumerManager(kafkaConfigWrapper);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void shutdown() {
-        for (KafkaBenchConsumer consumer : consumers) {
-            // consumer.close()
-        }
         for (KafkaBenchProducer producer : producers) {
             producer.close();
         }
@@ -98,8 +92,5 @@ public class KafkaService {
     public String getKafkaConfigName() {return kafkaConfigName;}
     public List<KafkaBenchProducer> getProducers() {
         return producers;
-    }
-    public List<KafkaBenchConsumer> getConsumers() {
-        return consumers;
     }
 }

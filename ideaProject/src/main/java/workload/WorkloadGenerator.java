@@ -1,6 +1,7 @@
 package workload;
 
 import kafka.KafkaService;
+import metrics.PeriodicalStatsCollector;
 import metrics.ProducerStats;
 import metrics.MetricsManager;
 import metrics.ProducerMetrics;
@@ -8,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import util.StringGenerator;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,18 +41,12 @@ public class WorkloadGenerator {
         this.stringGenerator = new StringGenerator();
         this.producerRate = workloadConfig.getProducerRatePerSec();
         this.benchmarkDuration = workloadConfig.getBenchmarkDurationMinutes();
-        this.warmupDuration = workloadConfig.getWarmupDuration();
+        this.warmupDuration = workloadConfig.getWarmupDurationMinutes();
     }
 
     public void generateLoad() {
-
         initializeKafka();
-        // TODO: create consumers and check their readiness
-        //consumerManager.createConsumers(topics);
-        //consumerManager.ensureConsumersReadiness();
-        if (producerRate == 0) {
-            // TODO: find max. producer rate
-        }
+        startPeriodicalCollector();
         generateWorkload();
         enterWarmupPhase();
         enterBenchPhase();
@@ -61,15 +55,21 @@ public class WorkloadGenerator {
         prepareResults();
     }
 
+    private void startPeriodicalCollector() {
+        kafkaService.getProducers().forEach(
+                producer -> producersStats.add(producer.getLocalStats()));
+        PeriodicalStatsCollector statsCollector = new PeriodicalStatsCollector(producersStats, benchmarkDuration);
+        executorService.submit(statsCollector);
+    }
+
     private void prepareResults() {
-        // TODO: this is rather ugly...
         // Find a way to make a better separation of concerns here...
         kafkaService.getProducers().forEach(
                 producer -> producersMetrics.add(new ProducerMetrics(producer)));
-        kafkaService.getProducers().forEach(
-                producer -> producersStats.add(producer.getLocalStats()));
+        //kafkaService.getProducers().forEach(
+        //        producer -> producersStats.add(producer.getLocalStats()));
         long totalExpectedRecordsNumber = kafkaService.getProducers().stream()
-                .map(p -> p.getLocalStats().messageCounter).mapToLong(i -> i).sum();
+                .map(p -> p.getLocalStats().periodicalMessageCount).mapToLong(i -> i).sum();
 
         Map<String, String> producerPros = kafkaService.getProducerProperties();
         String benchmarkName = kafkaService.getKafkaConfigName() + "," +
@@ -92,7 +92,8 @@ public class WorkloadGenerator {
     private void enterBenchPhase() {
         LOGGER.info("Starting the benchmark. It'll run for {} minutes", benchmarkDuration);
         try {
-            TimeUnit.SECONDS.sleep(30);
+            TimeUnit.SECONDS.sleep(15);
+            //BENCH_DURATION_UNIT.sleep(benchmarkDuration);
         } catch (InterruptedException e) {
             LOGGER.error(e);
         }
@@ -101,16 +102,12 @@ public class WorkloadGenerator {
     private void enterWarmupPhase() {
         LOGGER.info("Getting warm-up for {} minutes", warmupDuration);
         try {
-            //BENCH_DURATION_UNIT.sleep(
-            //       benchmarkDuration + EXTRA_SHUTDOWN_TIME);
             TimeUnit.SECONDS.sleep(5);
-
+            //BENCH_DURATION_UNIT.sleep(warmupDuration);
         } catch (InterruptedException e) {
             LOGGER.error(e);
         }
-        kafkaService.getProducers().forEach(
-                p -> p.setWarmup(false)
-        );
+        kafkaService.getProducers().forEach(p -> p.setWarmup(false));
     }
 
     private void stopLoad() {
@@ -118,7 +115,6 @@ public class WorkloadGenerator {
         executorService.submit(() -> futures.forEach(f -> f.cancel(true)));
 
     }
-    //benchmarkDuration, BENCH_DURATION_UNIT
 
     /**
      * Each run() method of the corresponding thread (KafkaBenchProducer)
@@ -129,7 +125,6 @@ public class WorkloadGenerator {
      */
     private void generateWorkload() {
         long period = calculatePeriodForGivenProducerRate(producerRate);
-        System.out.println("Period: " + period);
         futures = kafkaService.getProducers()
                 .stream()
                 .map(producer -> executorService.scheduleAtFixedRate(
@@ -140,9 +135,6 @@ public class WorkloadGenerator {
                 )).collect(Collectors.toList());
     }
 
-    /*
-    Starting level: 1 message / s
-     */
     private long calculatePeriodForGivenProducerRate(int producerRate) {
         return (NANOS_IN_SECOND / producerRate);
     }
@@ -150,6 +142,5 @@ public class WorkloadGenerator {
     private void shutdown() {
         kafkaService.shutdown();
         executorService.shutdown();
-        // output results
     }
 }
