@@ -17,17 +17,17 @@ public class KafkaBenchProducer implements Runnable {
     private static final AtomicLong idCounter = new AtomicLong(0);
 
     private final long id;
-    private final StringGenerator stringGenerator;
+    private final byte[] payload;
     private final KafkaProducer<String, byte[]> producer;
     private final String topic;
     private final ProducerStats producerStats;
 
     private boolean warmup = true;
 
-    public KafkaBenchProducer(KafkaProducer<String, byte[]> producer, String topic, StringGenerator stringGenerator) {
+    public KafkaBenchProducer(KafkaProducer<String, byte[]> producer, String topic, String payload) {
         this.producer = producer;
         this.topic = topic;
-        this.stringGenerator = stringGenerator;
+        this.payload = payload.getBytes(StandardCharsets.UTF_8);
         this.id = idCounter.getAndIncrement();
         this.producerStats = new ProducerStats();
     }
@@ -42,7 +42,6 @@ public class KafkaBenchProducer implements Runnable {
     }
 
     private void sendMessage() {
-        byte[] payload = stringGenerator.createPayloadRandomlyWithSize().getBytes(StandardCharsets.UTF_8);
         ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, KeyGen.get(), payload);
         final long sendTime = System.nanoTime();
         producer.send(record, (recordMetadata, e) -> {
@@ -61,8 +60,7 @@ public class KafkaBenchProducer implements Runnable {
     }
 
     private void sendWarmupMessage() {
-        byte[] payload = stringGenerator.createPayloadRandomlyWithSize().getBytes(StandardCharsets.UTF_8);
-        ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, payload);
+        ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, KeyGen.get(), payload);
         producer.send(record);
     }
 

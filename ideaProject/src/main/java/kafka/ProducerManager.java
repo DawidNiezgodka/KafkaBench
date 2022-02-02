@@ -46,12 +46,6 @@ public class ProducerManager {
 
     public KafkaBenchProducer createProducer(String topic) {
         KafkaProducer<String, byte[]> producer = new KafkaProducer<>(producerProps);
-        return new KafkaBenchProducer(producer, topic, stringGenerator);
-    }
-
-    public List<KafkaBenchProducer> createProducers(List<String> topics) {
-        List<KafkaBenchProducer> producers = new ArrayList<>();
-        topics.forEach(t -> producers.add(createProducer(t)));
-        return producers;
+        return new KafkaBenchProducer(producer, topic, stringGenerator.getDefaultPayload());
     }
 }

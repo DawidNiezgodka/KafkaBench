@@ -25,7 +25,6 @@ public class WorkloadGenerator {
     private final WorkloadConfig workloadConfig;
     private final KafkaService kafkaService;
     private final ScheduledThreadPoolExecutor executorService;
-    private final StringGenerator stringGenerator;
     private final int benchmarkDuration;
     private final int warmupDuration;
 
@@ -38,7 +37,6 @@ public class WorkloadGenerator {
         this.workloadConfig = workloadConfig;
         this.kafkaService = kafkaService;
         this.executorService = new ScheduledThreadPoolExecutor(workloadConfig.getNumberOfTopics());
-        this.stringGenerator = new StringGenerator();
         this.producerRate = workloadConfig.getProducerRatePerSec();
         this.benchmarkDuration = workloadConfig.getBenchmarkDurationMinutes();
         this.warmupDuration = workloadConfig.getWarmupDurationMinutes();
@@ -58,7 +56,7 @@ public class WorkloadGenerator {
     private void startPeriodicalCollector() {
         kafkaService.getProducers().forEach(
                 producer -> producersStats.add(producer.getLocalStats()));
-        PeriodicalStatsCollector statsCollector = new PeriodicalStatsCollector(producersStats, benchmarkDuration);
+        PeriodicalStatsCollector statsCollector = new PeriodicalStatsCollector(producersStats, benchmarkDuration, warmupDuration);
         executorService.submit(statsCollector);
     }
 
@@ -66,11 +64,6 @@ public class WorkloadGenerator {
         // Find a way to make a better separation of concerns here...
         kafkaService.getProducers().forEach(
                 producer -> producersMetrics.add(new ProducerMetrics(producer)));
-        //kafkaService.getProducers().forEach(
-        //        producer -> producersStats.add(producer.getLocalStats()));
-        long totalExpectedRecordsNumber = kafkaService.getProducers().stream()
-                .map(p -> p.getLocalStats().periodicalMessageCount).mapToLong(i -> i).sum();
-
         Map<String, String> producerPros = kafkaService.getProducerProperties();
         String benchmarkName = kafkaService.getKafkaConfigName() + "," +
                 workloadConfig.getName();
@@ -83,8 +76,6 @@ public class WorkloadGenerator {
         Set<String> topics = kafkaService.createTopics(workloadConfig.getNumberOfTopics(),
                 workloadConfig.getPartitionsPerTopic());
         LOGGER.info("Created {} topics", topics.size());
-        String payload = stringGenerator.createPayloadRandomly(workloadConfig.getMessageSize());
-        LOGGER.info("Created payload of the size {}", payload.length());
         kafkaService.createProducers(topics);
         LOGGER.info("Created {} producers", kafkaService.getProducers().size());
     }
@@ -92,8 +83,7 @@ public class WorkloadGenerator {
     private void enterBenchPhase() {
         LOGGER.info("Starting the benchmark. It'll run for {} minutes", benchmarkDuration);
         try {
-            TimeUnit.SECONDS.sleep(15);
-            //BENCH_DURATION_UNIT.sleep(benchmarkDuration);
+            BENCH_DURATION_UNIT.sleep(benchmarkDuration);
         } catch (InterruptedException e) {
             LOGGER.error(e);
         }
@@ -102,8 +92,7 @@ public class WorkloadGenerator {
     private void enterWarmupPhase() {
         LOGGER.info("Getting warm-up for {} minutes", warmupDuration);
         try {
-            TimeUnit.SECONDS.sleep(5);
-            //BENCH_DURATION_UNIT.sleep(warmupDuration);
+            BENCH_DURATION_UNIT.sleep(warmupDuration);
         } catch (InterruptedException e) {
             LOGGER.error(e);
         }

@@ -1,27 +1,27 @@
 package metrics;
 
 import bench.BenchmarkResult;
-import bench.PeriodicResult;
 import bench.ResBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import util.BenchConsts;
 import util.CsvWriter;
+import util.Formatter;
 import util.MissingConfigInfoException;
-import util.PeriodicalRateCsvWriter;
 import workload.WorkloadConfig;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class MetricsManager {
 
     private static final Logger LOGGER = LogManager.getLogger(MetricsManager.class);
 
-    private List<ProducerMetrics> producerMetricsList;
-    private List<ProducerStats> producerStatsList;
+    private final List<ProducerMetrics> producerMetricsList;
+    private final List<ProducerStats> producerStatsList;
 
     public MetricsManager(List<ProducerMetrics> producerMetricsList,
                           List<ProducerStats> producerStatsList) {
@@ -32,15 +32,16 @@ public class MetricsManager {
 
     public void writeMetrics(boolean defaultSetting, WorkloadConfig workloadConfig,
                              Map<String, String> producerProps, String benchName) {
-        writeAveMetrics(defaultSetting, workloadConfig, producerProps, benchName);
-        writePeriodicMetrics(benchName, producerStatsList);
+        writeAllMetrics(defaultSetting, workloadConfig, producerProps, benchName);
     }
 
-    private void writeAveMetrics(boolean defaultSetting, WorkloadConfig workloadConfig, Map<String, String> producerProps, String benchName) {
+    private void writeAllMetrics(boolean defaultSetting,
+                                 WorkloadConfig workloadConfig, Map<String, String> producerProps, String benchName) {
         ResBuilder resBuilder = new ResBuilder();
         setBenchmarkSettings(defaultSetting, workloadConfig, producerProps, benchName, resBuilder);
         setManualResults(workloadConfig, resBuilder);
         setResultsFromProducerMetrics(resBuilder);
+        setPeriodicMetrics(resBuilder);
         BenchmarkResult benchmarkResult = new BenchmarkResult(resBuilder);
         CsvWriter.toCsv(benchmarkResult);
     }
@@ -51,13 +52,24 @@ public class MetricsManager {
                 .stream()
                 .map(ProducerMetrics::getRelevantMetrics)
                 .flatMap(m -> m.entrySet().stream())
+                .filter(metric -> BenchConsts.SUMMED_PRODUCER_METRICS.contains(metric.getKey()))
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(
                         Map.Entry::getValue)));
-        summed = summed.entrySet().stream().collect(Collectors.toMap(
+        Map<String, Double> averaged = producerMetricsList
+                .stream()
+                .map(ProducerMetrics::getRelevantMetrics)
+                .flatMap(m -> m.entrySet().stream())
+                .filter(metric -> BenchConsts.AVERAGED_PRODUCER_METRICS.contains(metric.getKey()))
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.averagingDouble(
+                        Map.Entry::getValue)));
+        Stream<Map.Entry<String, Double>> combined = Stream.concat(summed.entrySet().stream(), averaged.entrySet().stream());
+        Map<String, Double> result = combined.collect(
+                Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        result = result.entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
-                e -> Math.round(e.getValue()*100.0)/100.0
+                e -> Formatter.round(e.getValue())
         ));
-        resBuilder.setResultsFromProducerMetricsMethod(summed);
+        resBuilder.setResultsFromProducerMetricsMethod(result);
     }
 
     private void setManualResults(WorkloadConfig workloadConfig, ResBuilder resBuilder) {
@@ -78,7 +90,8 @@ public class MetricsManager {
                 .orElse(0d);
 
         double estimatedThroughput = sumBytesSent / (workloadConfig.getBenchmarkDurationMinutes()*60) / (1024*1024);
-        resBuilder.setResults(estimatedThroughput, aveLatency, maxLatency);
+        resBuilder.setResults(Formatter.round(estimatedThroughput),
+                Formatter.round(aveLatency), Formatter.round(maxLatency));
     }
 
     private void setBenchmarkSettings(boolean defaultSetting, WorkloadConfig workloadConfig,
@@ -100,20 +113,21 @@ public class MetricsManager {
         }
     }
 
-    private void writePeriodicMetrics(String benchName, List<ProducerStats> statsList) {
+    private void setPeriodicMetrics(ResBuilder resBuilder) {
 
-        List<Double> summedRates = IntStream.range(0, statsList.get(0).producerRates.size())
-                .mapToObj(i -> statsList.stream()
+        List<Double> summedRates = IntStream.range(0, producerStatsList.get(0).producerRates.size())
+                .mapToObj(i -> producerStatsList.stream()
                         .mapToDouble(l -> l.producerRates.get(i))
                         .sum())
                 .collect(Collectors.toList());
-        List<Double> summedThroughputs = IntStream.range(0, statsList.get(0).producerThroughputs.size())
-                .mapToObj(i -> statsList.stream()
+        List<Double> summedThroughputs = IntStream.range(0, producerStatsList.get(0).producerThroughputs.size())
+                .mapToObj(i -> producerStatsList.stream()
                         .mapToDouble(l -> l.producerThroughputs.get(i))
                         .sum())
                 .collect(Collectors.toList());
-        PeriodicResult periodicResult = new PeriodicResult(benchName, summedRates, summedThroughputs);
-        PeriodicalRateCsvWriter.toCsv(periodicResult);
-    }
 
+        String producerRatesRes = summedRates.stream().map(Object::toString).collect(Collectors.joining(","));
+        String producerThroughputsRes = summedThroughputs.stream().map(Object::toString).collect(Collectors.joining(","));
+        resBuilder.setPeriodicalResultStrings(producerRatesRes, producerThroughputsRes);
+    }
 }

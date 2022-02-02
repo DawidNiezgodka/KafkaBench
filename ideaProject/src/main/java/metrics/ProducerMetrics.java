@@ -10,10 +10,11 @@ import java.util.Map;
 
 public class ProducerMetrics {
 
+    Map<MetricName, ? extends Metric> metrics;
     private final Map<String, Double> relevantMetrics;
 
     public ProducerMetrics(KafkaBenchProducer producer) {
-        Map<MetricName, ? extends Metric> metrics = producer.getProducer().metrics();
+        this.metrics = producer.getProducer().metrics();
         this.relevantMetrics = filterProducerMetrics(metrics);
     }
 

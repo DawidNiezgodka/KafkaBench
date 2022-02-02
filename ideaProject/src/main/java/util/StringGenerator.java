@@ -14,14 +14,6 @@ public class StringGenerator {
         this.random = new Random();
     }
 
-    public StringGenerator(boolean withSeed) {
-        if (withSeed) {
-            this.random = new Random(BenchConsts.SEED);
-        } else {
-            this.random = new Random();
-        }
-    }
-
     public StringGenerator(int defaultMessageSize) {
         this.random = new Random();
         this.defaultMessageSize = defaultMessageSize;
@@ -33,12 +25,6 @@ public class StringGenerator {
         return new String(array, StandardCharsets.UTF_8);
     }
 
-    public String createPayloadRandomlyWithSize() {
-        byte[] array = new byte[this.defaultMessageSize];
-        this.random.nextBytes(array);
-        return new String(array, StandardCharsets.UTF_8);
-    }
-
     public String createRandomTopicName(int topicNameLen) {
         byte[] array = new byte[topicNameLen];
         this.random.nextBytes(array);
@@ -46,7 +32,7 @@ public class StringGenerator {
         return topicName.replaceAll(NOT_LEGAL_CHARS_IN_KAFKA_TOPIC, "");
     }
 
-    public static String getDefaultPayload() {
+    public String getDefaultPayload() {
         return BenchConsts.STRING_1024;
     }
 }

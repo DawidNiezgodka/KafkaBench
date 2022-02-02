@@ -20,6 +20,8 @@ public class BenchmarkResult {
     private final double publishRate;
     private final double aveLatency;
     private final double maxLatency;
+    private final String producerRates;
+    private final String producerThroughputs;
 
     /**
      * Metrics from the KafkaProducer's metrics() method
@@ -29,6 +31,12 @@ public class BenchmarkResult {
     private final double batchSizeAvg;
     private final double recSendTotal;
     private final double recSendRate;
+    private final double batchSizeMax;
+    private final double recSizeMax;
+    private final double recSizeAvg;
+    private final double recPerReqAvg;
+    private final double recQueTimeAvg;
+    private final double recQueTimeMax;
 
     public BenchmarkResult(ResBuilder resBuilder) {
         this.benchTime = LocalDateTime.now();
@@ -45,6 +53,15 @@ public class BenchmarkResult {
         this.batchSizeAvg = resBuilder.getBatchSizeAvg();
         this.recSendTotal = resBuilder.getRecSendTotal();
         this.recSendRate = resBuilder.getRecSendRate();
+        this.producerRates = resBuilder.getProducerRates();
+        this.producerThroughputs = resBuilder.getProducerThroughputs();
+        this.batchSizeMax = resBuilder.getBatchSizeMax();
+        this.recSizeMax = resBuilder.getRecSizeMax();
+        this.recSizeAvg = resBuilder.getRecSizeAvg();
+        this.recPerReqAvg = resBuilder.getRecPerReqAvg();
+        this.recQueTimeAvg = resBuilder.getRecQueTimeAvg();
+        this.recQueTimeMax = resBuilder.getRecQueTimeMax();
+
     }
 
     public int getPartitions() {
@@ -97,5 +114,41 @@ public class BenchmarkResult {
 
     public String getName() {
         return name;
+    }
+
+    public LocalDateTime getBenchTime() {
+        return benchTime;
+    }
+
+    public String getProducerRates() {
+        return producerRates;
+    }
+
+    public String getProducerThroughputs() {
+        return producerThroughputs;
+    }
+
+    public double getBatchSizeMax() {
+        return batchSizeMax;
+    }
+
+    public double getRecQueTimeAvg() {
+        return recQueTimeAvg;
+    }
+
+    public double getRecQueTimeMax() {
+        return recQueTimeMax;
+    }
+
+    public double getRecSizeMax() {
+        return recSizeMax;
+    }
+
+    public double getRecSizeAvg() {
+        return recSizeAvg;
+    }
+
+    public double getRecPerReqAvg() {
+        return recPerReqAvg;
     }
 }

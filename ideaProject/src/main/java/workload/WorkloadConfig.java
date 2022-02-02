@@ -1,14 +1,5 @@
 package workload;
 
-/*
-name: part=1,rate=10000
-numberOfTopics: 4
-partitionsPerTopic: 1
-messageSize: 1024
-producerRatePerSec: 30000
-benchmarkDurationMinutes: 1
-warmupDurationMinutes: 1
- */
 public class WorkloadConfig {
 
     private String name;

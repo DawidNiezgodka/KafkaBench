@@ -23,5 +23,4 @@ public class ProducerStats {
         periodicalByteCount = 0;
         periodicalMessageCount = 0;
     }
-
 }
