@@ -5,7 +5,7 @@
 2. Go to VPC -> Subnets -> Note down CIDRs of Subnets, \
 3. Launch instance: \
     3.1 Choose AMI: Ubuntu 18.04 \
-    3.2 Choose instance type: t2.medium \
+    3.2 Choose instance type: t2.xlarge \
     3.3 Configure instance details:  \
         3.3.1 Configure subnet: For the first instance, choose the first availability zone from Step 2 i.e. in my AWS console the firs range of IP addresses - 172.31.0.0/20 maps to the A.Z eu-central-1c \
         3.3.2 Configure network interface:  \
@@ -20,16 +20,20 @@
     Custom TCP  | 3888  | 172.31.0.0/16 | zookeeper \
     Custom TCP  | 9092  | 172.31.0.0/16 | kafka \ 
     Custom TCP  | 7075  | 172.31.0.0/16 | jmx \
+    
+ 4. Update properties and execute corresponding scripts.
 
 ## PART 2: Setting up a zookeeper quorum (3 machines)
 
 1. Create an image of the existing instance. Go to instances menu, right click, create an image, \
 2. Go to the Images window. Choose AMIs. Create server2 and server3 from theme. Important: assign different availabily zones to each new subnet, so that 172.31.22.2 and 172.31.33.3 are in respective ranges. \
+3. Update properties and execute corresponding scripts.
 
 ## PART 3: Setting up a kafka cluster 
-1. Go to volume and create three 10gb volumes, \
+1. Go to volume and create three 25gb volumes, \
 2. Attach a volume with a given availability zone to the corresponding server, \
 3. Update the security group so that it contains 9092 from 172.31.0.0/16 and MyIP. \
+4. Update properties and execute corresponding scripts.
 
 ## PART 4: Setting up a monitoring stack
 1. Create a new instance, t2.micro with 8GB ram, \
@@ -38,5 +42,14 @@
     SSH         | 22    | MyIP          | SSH to machines \
     Custom TCP  | 9090  | 172.31.0.0/16 | Prometheus \
 
-3. 
+3. Update properties and execute corresponding scripts.
+
+## PART 5: Set up a workload generator
+
+1. Upload JAR and kafka setting yml files and workload setting yml files,
+2. Choose t2.xlarge,
+3. Adjust security group,
+4. Add permission to the machine to read/write from s3
+5. Copy files from s3
+6. Execute benchmarks
 
