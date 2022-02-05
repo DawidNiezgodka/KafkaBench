@@ -43,8 +43,8 @@ public class CsvWriter {
             System.exit(1);
         }
 
-        CSV_MAPPER.findAndRegisterModules();
-        CSV_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        //CSV_MAPPER.findAndRegisterModules();
+        //CSV_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
 

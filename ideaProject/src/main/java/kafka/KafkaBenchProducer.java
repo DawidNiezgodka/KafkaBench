@@ -52,7 +52,7 @@ public class KafkaBenchProducer implements Runnable {
                 producerStats.totalByteCount += payload.length;
                 producerStats.latencies.add(TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - sendTime));
             } else {
-                LOGGER.info("Failed to send a payload: {}", payload);
+                LOGGER.info("Failed to send a payload:");
                 producerStats.periodicalFailedCount++;
                 producerStats.totalFailedCount++;
             }

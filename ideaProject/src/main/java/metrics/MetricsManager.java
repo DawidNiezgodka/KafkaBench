@@ -89,9 +89,19 @@ public class MetricsManager {
                 .average()
                 .orElse(0d);
 
+        long sentMessages = producerStatsList.stream()
+                .map(stats -> stats.totalMessageCount)
+                .mapToLong(l -> l)
+                .sum();
+
+        long failedMessages = producerStatsList.stream()
+                .map(stats -> stats.totalFailedCount)
+                .mapToLong(l -> l)
+                .sum();
+
         double estimatedThroughput = sumBytesSent / (workloadConfig.getBenchmarkDurationMinutes()*60) / (1024*1024);
         resBuilder.setResults(Formatter.round(estimatedThroughput),
-                Formatter.round(aveLatency), Formatter.round(maxLatency));
+                Formatter.round(aveLatency), Formatter.round(maxLatency), sentMessages, failedMessages);
     }
 
     private void setBenchmarkSettings(boolean defaultSetting, WorkloadConfig workloadConfig,

@@ -32,8 +32,6 @@ public class PeriodicalStatsCollector implements Runnable {
         LOGGER.info("Bench start time: {}. Bench end time: {}", startTime, endTime);
         long startPeriod = System.nanoTime();
         while (true) {
-
-            LOGGER.info("Current start period: {}", startPeriod);
             try {
                 Thread.sleep(15000);
             } catch (InterruptedException e) {

@@ -16,6 +16,8 @@ public class ResBuilder {
     private String producerRates;
     private String producerThroughputs;
     private double publishRate;
+    private long failedMessages;
+    private long sentMessages;
 
     private double reqLatAvg;
     private double reqLatMax;
@@ -52,10 +54,14 @@ public class ResBuilder {
         return this;
     }
 
-    public ResBuilder setResults(double publishRate, double aveLatency, double maxLatency) {
+    public ResBuilder setResults(double publishRate, double aveLatency, double maxLatency,
+                                 long sentMessages, long failedMessages) {
         this.publishRate = publishRate;
         this.aveLatency = aveLatency;
         this.maxLatency = maxLatency;
+        this.sentMessages = sentMessages;
+        this.failedMessages = failedMessages;
+
         return this;
     }
 
@@ -162,5 +168,13 @@ public class ResBuilder {
 
     public double getRecPerReqAvg() {
         return recPerReqAvg;
+    }
+
+    public long getFailedMessages() {
+        return failedMessages;
+    }
+
+    public long getSentMessages() {
+        return sentMessages;
     }
 }

@@ -1,0 +1,13 @@
+brokerConfig: |
+  bootstrap.servers=kafka1:9092,kafka2:9092,kafka3:9092
+messageSize: 1024
+name: A0_B262144_PART100
+producerConfig: |
+  acks=0
+  linger.ms=100000
+  batch.size=262144
+replicationFactor: 1
+topicConfig: |
+  min.insync.replicas=1
+  retention.ms=3000
+  log.cleanup.policy=delete

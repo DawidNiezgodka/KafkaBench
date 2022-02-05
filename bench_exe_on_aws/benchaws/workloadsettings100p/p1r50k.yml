@@ -1,0 +1,7 @@
+name: part=1,rate=50000
+numberOfTopics: 4
+partitionsPerTopic: 1
+messageSize: 1024
+producerRatePerSec: 50000
+benchmarkDurationMinutes: 5
+warmupDurationMinutes: 1

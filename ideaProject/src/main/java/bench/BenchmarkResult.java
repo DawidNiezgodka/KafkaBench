@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public class BenchmarkResult {
 
-    private final LocalDateTime benchTime;
+    private final String benchTime;
     private final String name;
     /**
      * Producer and topic config
@@ -22,6 +22,8 @@ public class BenchmarkResult {
     private final double maxLatency;
     private final String producerRates;
     private final String producerThroughputs;
+    private final long failedMessages;
+    private final long sentMessages;
 
     /**
      * Metrics from the KafkaProducer's metrics() method
@@ -39,7 +41,7 @@ public class BenchmarkResult {
     private final double recQueTimeMax;
 
     public BenchmarkResult(ResBuilder resBuilder) {
-        this.benchTime = LocalDateTime.now();
+        this.benchTime = LocalDateTime.now().toString();
         this.name = resBuilder.getName();
         this.publishRate = resBuilder.getPublishRate();
         this.partitions = resBuilder.getPartitions();
@@ -48,6 +50,8 @@ public class BenchmarkResult {
         this.lingerMs = resBuilder.getLingerMs();
         this.aveLatency = resBuilder.getAveLatency();
         this.maxLatency = resBuilder.getMaxLatency();
+        this.sentMessages = resBuilder.getSentMessages();
+        this.failedMessages = resBuilder.getFailedMessages();
         this.reqLatAvg = resBuilder.getReqLatAvg();
         this.reqLatMax = resBuilder.getReqLatMax();
         this.batchSizeAvg = resBuilder.getBatchSizeAvg();
@@ -61,6 +65,7 @@ public class BenchmarkResult {
         this.recPerReqAvg = resBuilder.getRecPerReqAvg();
         this.recQueTimeAvg = resBuilder.getRecQueTimeAvg();
         this.recQueTimeMax = resBuilder.getRecQueTimeMax();
+
 
     }
 
@@ -116,7 +121,7 @@ public class BenchmarkResult {
         return name;
     }
 
-    public LocalDateTime getBenchTime() {
+    public String getBenchTime() {
         return benchTime;
     }
 
@@ -150,5 +155,13 @@ public class BenchmarkResult {
 
     public double getRecPerReqAvg() {
         return recPerReqAvg;
+    }
+
+    public long getFailedMessages() {
+        return failedMessages;
+    }
+
+    public long getSentMessages() {
+        return sentMessages;
     }
 }

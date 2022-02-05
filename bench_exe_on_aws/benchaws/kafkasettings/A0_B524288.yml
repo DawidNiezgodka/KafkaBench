@@ -1,0 +1,11 @@
+brokerConfig: |
+  bootstrap.servers=kafka1:9092,kafka2:9092,kafka3:9092
+messageSize: 1024
+name: A0_B524288
+producerConfig: |
+  acks=0
+  linger.ms=100000
+  batch.size=524288
+replicationFactor: 3
+topicConfig: |
+  min.insync.replicas=3
