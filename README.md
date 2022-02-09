@@ -3,7 +3,7 @@ A project for the course Cloud Service Benchmarking @ TU Berlin, which focuses o
 
 The benchmark presented in this project focuses on throughput of a Kafka Producer (further interchangeably referred to as producer) and the impact of a subset of producer properties on performance. In particular, the research questions are:
 
-1. What is the effect of an acknowledgement strategy, a batch size and a number of partitions on Apache Kafka Producer’s throughput using commodity hardware?
+1. What is the effect of an acknowledgement strategy (acks), a batch size (batch.size) and a number of partitions on Apache Kafka Producer’s throughput using commodity hardware?
 2. What maximum throughput can be achieved in such a setting?
 
 # Benchmark Design
@@ -38,6 +38,10 @@ Each benchmark runs consists of the following steps:
 5. Save metrics collected during the execution to a file.
 
 During the benchmark run, metrics are collected.
+
+## Offline Analysis
+
+The code for the offline data-analysis is presented in this project: 
 
 # GitHub Project
 
